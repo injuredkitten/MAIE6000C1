@@ -72,6 +72,14 @@ def metrics() -> Response:
 
 @app.post("/triage", response_model=TriageResponse)
 def triage(payload: TriageRequest) -> TriageResponse:
+    logger.info(
+        "triage_request_received",
+        extra={
+            "case_id": payload.case_id,
+            "title_length": len(payload.title),
+            "description_length": len(payload.description),
+        },
+    )
     start = perf_counter()
     result = triage_text(payload.title, payload.description)
     TRIAGE_REQUESTS.labels(result.label).inc()
